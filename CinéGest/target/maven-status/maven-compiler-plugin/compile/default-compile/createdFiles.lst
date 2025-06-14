@@ -1,0 +1,12 @@
+models/Ticket.class
+tools/SessionManager.class
+models/Movie.class
+tools/TicketManager.class
+tools/MovieManager.class
+com/example/cinemamanager/CinemaManagerApplication.class
+models/Room.class
+com/example/cinemamanager/MainController.class
+module-info.class
+models/Session.class
+tools/RoomManager.class
+bdd/BddManager.class

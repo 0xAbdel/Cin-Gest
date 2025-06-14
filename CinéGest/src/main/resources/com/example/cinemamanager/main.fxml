@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cinemamanager.MainController">
+    <top>
+        <VBox>
+            <MenuBar>
+                <Menu text="Fichier">
+                    <MenuItem onAction="#exportPDF" text="Exporter PDF" />
+                    <MenuItem onAction="#exportCSV" text="Exporter CSV" />
+                    <SeparatorMenuItem />
+                    <MenuItem onAction="#quit" text="Quitter" />
+                </Menu>
+                <Menu text="Édition">
+                    <MenuItem onAction="#refreshData" text="Actualiser" />
+                </Menu>
+                <Menu text="Affichage">
+                    <MenuItem onAction="#refreshData" text="Rafraîchir" />
+                </Menu>
+                <Menu text="Aide">
+                    <MenuItem text="À propos" />
+                </Menu>
+            </MenuBar>
+        </VBox>
+    </top>
+    <center>
+        <TabPane fx:id="mainTabPane" tabClosingPolicy="UNAVAILABLE">
+
+            <!-- DASHBOARD TAB -->
+            <Tab text="Tableau de Bord">
+                <VBox spacing="20" styleClass="tab-content">
+                    <padding>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                    </padding>
+
+                    <!-- Stats Grid -->
+                    <GridPane hgap="15" vgap="15">
+                        <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        </columnConstraints>
+                        <rowConstraints>
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        </rowConstraints>
+
+                        <VBox alignment="CENTER" styleClass="stat-card" GridPane.columnIndex="0">
+                            <Label fx:id="totalRoomsLabel" styleClass="stat-number" text="0" />
+                            <Label styleClass="stat-label" text="Salles Actives" />
+                        </VBox>
+
+                        <VBox alignment="CENTER" styleClass="stat-card" GridPane.columnIndex="1">
+                            <Label fx:id="totalMoviesLabel" styleClass="stat-number" text="0" />
+                            <Label styleClass="stat-label" text="Films à l'Affiche" />
+                        </VBox>
+
+                        <VBox alignment="CENTER" styleClass="stat-card" GridPane.columnIndex="2">
+                            <Label fx:id="totalTicketsLabel" styleClass="stat-number" text="0" />
+                            <Label styleClass="stat-label" text="Billets Disponibles" />
+                        </VBox>
+
+                        <VBox alignment="CENTER" styleClass="stat-card" GridPane.columnIndex="3">
+                            <Label fx:id="dailyRevenueLabel" styleClass="stat-number" text="0 €" />
+                            <Label styleClass="stat-label" text="Recettes du Jour" />
+                        </VBox>
+                    </GridPane>
+
+                    <!-- Dashboard Table -->
+                    <VBox>
+                        <Label styleClass="table-title" text="Vue d'ensemble des Salles">
+                            <font>
+                                <Font name="System Bold" size="14.0" />
+                            </font>
+                        </Label>
+                        <TableView fx:id="dashboardRoomsTable" styleClass="table-view">
+                            <columns>
+                                <TableColumn fx:id="dashRoomNameCol" prefWidth="150.0" text="Nom de la Salle" />
+                                <TableColumn fx:id="dashRoomCapacityCol" prefWidth="100.0" text="Capacité" />
+                                <TableColumn fx:id="dashMovieTitleCol" prefWidth="250.0" text="Film Attribué" />
+                            </columns>
+                        </TableView>
+                    </VBox>
+                </VBox>
+            </Tab>
+
+            <!-- ROOMS MANAGEMENT TAB -->
+            <Tab text="Gestion des Salles">
+                <HBox spacing="20" styleClass="tab-content">
+                    <padding>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                    </padding>
+
+                    <!-- Form Section -->
+                    <VBox spacing="15" styleClass="form-section" HBox.hgrow="NEVER">
+                        <Label styleClass="form-title" text="Créer une Nouvelle Salle">
+                            <font>
+                                <Font name="System Bold" size="14.0" />
+                            </font>
+                        </Label>
+
+                        <VBox spacing="5">
+                            <Label text="Nom de la Salle:" />
+                            <TextField fx:id="roomNameField" promptText="Ex: Salle 6, IMAX 1..." />
+                        </VBox>
+
+                        <VBox spacing="5">
+                            <Label text="Capacité (nombre de places):" />
+                            <TextField fx:id="roomCapacityField" promptText="150" />
+                        </VBox>
+
+                        <VBox spacing="5">
+                            <Label text="Film à Attribuer (optionnel):" />
+                            <ComboBox fx:id="roomMovieCombo" prefWidth="250.0" promptText="Sélectionner un film" />
+                        </VBox>
+
+                        <HBox spacing="10">
+                            <Button onAction="#addRoom" styleClass="button-primary" text="Créer la Salle" />
+                            <Button onAction="#clearRoomFields" text="Annuler" />
+                        </HBox>
+                    </VBox>
+
+                    <!-- Table Section -->
+                    <VBox spacing="10" HBox.hgrow="ALWAYS">
+                        <Label styleClass="form-title" text="Liste des Salles">
+                            <font>
+                                <Font name="System Bold" size="14.0" />
+                            </font>
+                        </Label>
+
+                        <TableView fx:id="roomsTable" styleClass="table-view">
+                            <columns>
+                                <TableColumn fx:id="roomNameCol" prefWidth="150.0" text="Nom" />
+                                <TableColumn fx:id="roomCapacityCol" prefWidth="100.0" text="Capacité" />
+                                <TableColumn fx:id="movieTitleCol" prefWidth="250.0" text="Film Attribué" />
+                                <TableColumn fx:id="roomAvailableCol" prefWidth="100.0" text="Statut" />
+                            </columns>
+                        </TableView>
+                    </VBox>
+                </HBox>
+            </Tab>
+
+            <!-- MOVIES MANAGEMENT TAB -->
+            <Tab text="Gestion des Films">
+                <HBox spacing="20" styleClass="tab-content">
+                    <padding>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                    </padding>
+
+                    <!-- Form Section -->
+                    <VBox spacing="15" styleClass="form-section" HBox.hgrow="NEVER">
+                        <Label styleClass="form-title" text="Ajouter un Nouveau Film">
+                            <font>
+                                <Font name="System Bold" size="14.0" />
+                            </font>
+                        </Label>
+
+                        <VBox spacing="5">
+                            <Label text="Titre du Film:" />
+                            <TextField fx:id="movieTitleField" promptText="Avatar: La Voie de l'Eau" />
+                        </VBox>
+
+                        <VBox spacing="5">
+                            <Label text="Genre:" />
+                            <TextField fx:id="movieGenreField" promptText="Science-Fiction, Action..." />
+                        </VBox>
+
+                        <VBox spacing="5">
+                            <Label text="Durée (minutes):" />
+                            <TextField fx:id="movieDurationField" promptText="120" />
+                        </VBox>
+
+                        <VBox spacing="5">
+                            <Label text="Description:" />
+                            <TextArea fx:id="movieDescriptionArea" prefRowCount="3" promptText="Description du film..." />
+                        </VBox>
+
+                        <HBox spacing="10">
+                            <Button onAction="#addMovie" styleClass="button-primary" text="Ajouter le Film" />
+                            <Button onAction="#clearMovieFields" text="Annuler" />
+                        </HBox>
+                    </VBox>
+
+                    <!-- Table Section -->
+                    <VBox spacing="10" HBox.hgrow="ALWAYS">
+                        <Label styleClass="form-title" text="Films à l'Affiche">
+                            <font>
+                                <Font name="System Bold" size="14.0" />
+                            </font>
+                        </Label>
+
+                        <TableView fx:id="moviesTable" styleClass="table-view">
+                            <columns>
+                                <TableColumn fx:id="movieTitleCol" prefWidth="250.0" text="Titre" />
+                                <TableColumn fx:id="movieGenreCol" prefWidth="150.0" text="Genre" />
+                                <TableColumn fx:id="movieDurationCol" prefWidth="100.0" text="Durée (min)" />
+                            </columns>
+                        </TableView>
+                    </VBox>
+                </HBox>
+            </Tab>
+
+            <!-- SESSIONS TAB -->
+            <Tab text="Programmation">
+                <HBox spacing="20" styleClass="tab-content">
+                    <padding>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                    </padding>
+
+                    <!-- Form Section -->
+                    <VBox spacing="15" styleClass="form-section" HBox.hgrow="NEVER">
+                        <Label styleClass="form-title" text="Programmer une Séance">
+                            <font>
+                                <Font name="System Bold" size="14.0" />
+                            </font>
+                        </Label>
+
+                        <VBox spacing="5">
+                            <Label text="Film:" />
+                            <ComboBox fx:id="sessionMovieCombo" prefWidth="250.0" promptText="Sélectionner un film" />
+                        </VBox>
+
+                        <VBox spacing="5">
+                            <Label text="Salle:" />
+                            <ComboBox fx:id="sessionRoomCombo" prefWidth="250.0" promptText="Sélectionner une salle" />
+                        </VBox>
+
+                        <VBox spacing="5">
+                            <Label text="Date:" />
+                            <DatePicker fx:id="sessionDatePicker" prefWidth="250.0" />
+                        </VBox>
+
+                        <VBox spacing="5">
+                            <Label text="Heure (format HH:MM):" />
+                            <TextField fx:id="sessionTimeField" promptText="14:30" />
+                        </VBox>
+
+                        <VBox spacing="5">
+                            <Label text="Prix du Billet (€):" />
+                            <TextField fx:id="sessionPriceField" promptText="12.50" />
+                        </VBox>
+
+                        <VBox spacing="5">
+                            <Label text="Billets Disponibles:" />
+                            <TextField fx:id="sessionTicketsField" promptText="150" />
+                        </VBox>
+
+                        <HBox spacing="10">
+                            <Button onAction="#addSession" styleClass="button-primary" text="Programmer" />
+                            <Button onAction="#clearSessionFields" text="Annuler" />
+                        </HBox>
+                    </VBox>
+
+                    <!-- Table Section -->
+                    <VBox spacing="10" HBox.hgrow="ALWAYS">
+                        <Label styleClass="form-title" text="Séances Programmées">
+                            <font>
+                                <Font name="System Bold" size="14.0" />
+                            </font>
+                        </Label>
+
+                        <TableView fx:id="sessionsTable" styleClass="table-view">
+                            <columns>
+                                <TableColumn fx:id="sessionIdCol" prefWidth="60.0" text="ID" />
+                                <TableColumn fx:id="sessionStartTimeCol" prefWidth="150.0" text="Date/Heure" />
+                                <TableColumn fx:id="sessionPriceCol" prefWidth="80.0" text="Prix (€)" />
+                                <TableColumn fx:id="sessionAvailableCol" prefWidth="80.0" text="Dispo" />
+                                <TableColumn fx:id="sessionSoldCol" prefWidth="80.0" text="Vendus" />
+                            </columns>
+                        </TableView>
+                    </VBox>
+                </HBox>
+            </Tab>
+
+            <!-- TICKETING TAB -->
+            <Tab text="Billetterie">
+                <HBox spacing="20" styleClass="tab-content">
+                    <padding>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                    </padding>
+
+                    <!-- Form Section -->
+                    <VBox spacing="15" styleClass="form-section" HBox.hgrow="NEVER">
+                        <Label styleClass="form-title" text="Vente de Billets">
+                            <font>
+                                <Font name="System Bold" size="14.0" />
+                            </font>
+                        </Label>
+
+                        <VBox spacing="5">
+                            <Label text="Séance:" />
+                            <ComboBox fx:id="ticketSessionCombo" prefWidth="250.0" promptText="Sélectionner une séance" />
+                        </VBox>
+
+                        <VBox spacing="5">
+                            <Label text="Type de Billet:" />
+                            <ComboBox fx:id="ticketTypeCombo" prefWidth="250.0" />
+                        </VBox>
+
+                        <VBox spacing="5">
+                            <Label text="Quantité:" />
+                            <TextField fx:id="ticketQuantityField" text="1" />
+                        </VBox>
+
+                        <VBox spacing="5">
+                            <Label text="Nom du Client (optionnel):" />
+                            <TextField fx:id="customerNameField" promptText="Jean Dupont" />
+                        </VBox>
+
+                        <Separator />
+
+                        <VBox spacing="5">
+                            <HBox spacing="10">
+                                <Label text="Prix unitaire:" />
+                                <Label fx:id="ticketPriceLabel" styleClass="stat-number" text="0.00 €" />
+                            </HBox>
+                            <HBox spacing="10">
+                                <Label text="Total à payer:" />
+                                <Label fx:id="totalPriceLabel" styleClass="stat-number" text="0.00 €" />
+                            </HBox>
+                        </VBox>
+
+                        <HBox spacing="10">
+                            <Button onAction="#sellTickets" styleClass="button-primary" text="Vendre" />
+                            <Button onAction="#clearTicketFields" text="Annuler" />
+                        </HBox>
+                    </VBox>
+
+                    <!-- Info Section -->
+                    <VBox spacing="10" HBox.hgrow="ALWAYS">
+                        <Label styleClass="form-title" text="Informations Tarifs">
+                            <font>
+                                <Font name="System Bold" size="14.0" />
+                            </font>
+                        </Label>
+
+                        <VBox spacing="10" styleClass="form-section">
+                            <Label text="Tarifs appliqués:" />
+                            <Label text="• Standard: Prix normal" />
+                            <Label text="• Étudiant: -20%" />
+                            <Label text="• Senior: -15%" />
+                            <Label text="• Enfant: -30%" />
+                        </VBox>
+
+                        <VBox spacing="10" styleClass="form-section">
+                            <Label text="Conseils de vente:" />
+                            <Label text="• Vérifiez la disponibilité" />
+                            <Label text="• Proposez les réductions" />
+                            <Label text="• Sélectionnez d'abord la séance" />
+                        </VBox>
+                    </VBox>
+                </HBox>
+            </Tab>
+
+        </TabPane>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER_LEFT" spacing="10" styleClass="status-bar">
+            <padding>
+                <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+            </padding>
+            <Label text="Cinema Manager v1.0 - Logiciel de Gestion Professionnel" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Button onAction="#refreshData" text="Actualiser" />
+        </HBox>
+    </bottom>
+</BorderPane>
